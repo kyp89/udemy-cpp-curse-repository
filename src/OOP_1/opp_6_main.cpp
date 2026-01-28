@@ -53,6 +53,20 @@ class IntContainer {
             *internalPtrValue = rhs.getValue();
             return *this;
         }
+
+        //Move assignment operator
+        IntContainer& operator=(IntContainer&& rhs) noexcept {
+            //Unikamy przypisania samego siebie
+            //Sprawdzamy czy adresy są takie same
+            //self assigment guard. Need to prevent deletion of this.internalPtrValue
+            cout << "Move assigment" << endl;
+            if(*this == rhs) return *this; 
+            //Głęboka kopia
+            delete internalPtrValue; //free this memory
+            internalPtrValue = rhs.internalPtrValue;//giving ownership to this
+            rhs.internalPtrValue = nullptr; //giving up ownership to this
+            return *this;
+        }
         //Nadpisujemy operator ==
         bool operator==(const IntContainer& intContainer) {
             if(internalPtrValue == intContainer.internalPtrValue) return true;
@@ -91,7 +105,7 @@ class IntContainer {
 
         ~IntContainer() {
             try {
-                cout << "Destructor" << endl;
+                //cout << "Destructor" << endl;
                 // cout << "INT Address: " << &internalPtrValue << endl;
                 // cout << "INT Value: " << *internalPtrValue << endl;
                 delete internalPtrValue;
@@ -154,6 +168,12 @@ int main() {
     IntContainer intC7 = 25;
 
     intC7 /= intC4;
+
+    cout << "intC7 value is: " << intC7.getValue() << endl;
+
+    //intC7 = std::move(IntContainerFactory(50));
+
+    intC7 = IntContainerFactory(50);
 
     cout << "intC7 value is: " << intC7.getValue() << endl;
 
